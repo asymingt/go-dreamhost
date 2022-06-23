@@ -31,4 +31,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	err = client.RemoveDNSRecord(ctx, recordInput)
+	if err != nil {
+		panic(err)
+	}
 }

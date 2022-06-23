@@ -23,3 +23,6 @@ lint: ## Runs a linter against the repository.
 
 build: fmt vet lint
 	go build -o bin/example example/dns.go 
+
+run: build
+	bin/example

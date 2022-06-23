@@ -64,12 +64,13 @@ type listDNSRecordsResponse struct {
 }
 
 const (
-	addRecordCmd   = "dns-add_record"
-	listRecordsCmd = "dns-list_records"
+	addRecordCmd    = "dns-add_record"
+	listRecordsCmd  = "dns-list_records"
+	removeRecordCmd = "dns-remove_record"
 )
 
 func (c *Client) AddDNSRecord(ctx context.Context, record DNSRecordInput) error {
-	params := addDNSRecordParams{
+	params := dnsRecordParams{
 		baseParams: baseParams{
 			APIKey:  c.apiKey,
 			Command: addRecordCmd,
@@ -135,6 +136,33 @@ func (c *Client) ListDNSRecords(ctx context.Context) ([]DNSRecord, error) {
 	})
 
 	return dnsResp.Records, nil
+}
+
+func (c *Client) RemoveDNSRecord(ctx context.Context, record DNSRecordInput) error {
+	params := dnsRecordParams{
+		baseParams: baseParams{
+			APIKey:  c.apiKey,
+			Command: removeRecordCmd,
+			Format:  string(jsonFormat),
+		},
+		DNSRecordInput: record,
+	}
+	req, err := newRequest(ctx, params)
+	if err != nil {
+		return errors.Wrap(err, "could not create client")
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return errors.Wrap(err, "failed to send request")
+	}
+	defer resp.Body.Close()
+
+	if _, err := getProcessedRespBody(*resp); err != nil {
+		return errors.Wrap(err, "failed to process response body")
+	}
+
+	return nil
 }
 
 func getProcessedRespBody(resp http.Response) ([]byte, error) {

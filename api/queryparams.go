@@ -6,7 +6,7 @@ type baseParams struct {
 	Format  string `url:"format,omitempty" json:"format"`
 }
 
-type addDNSRecordParams struct {
+type dnsRecordParams struct {
 	baseParams     `url:",inline" json:",inline"`
 	DNSRecordInput `url:",inline" json:",inline"`
 }
