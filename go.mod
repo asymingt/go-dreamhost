@@ -1,4 +1,4 @@
-module github.com/adamantal/go-dreamhost
+module github.com/asymingt/go-dreamhost
 
 go 1.18
 

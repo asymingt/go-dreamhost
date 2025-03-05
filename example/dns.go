@@ -2,12 +2,18 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"os"
 
-	"github.com/adamantal/go-dreamhost/api"
+	"github.com/asymingt/go-dreamhost/api"
 )
 
 func main() {
-	key := "<dreamhost API key>"
+	key := os.Getenv("DREAMHOST_API_KEY")
+	if key == "" {
+		panic("DREAMHOST_API_KEY environment variable is not set")
+	}
 	client, err := api.NewClient(key, nil)
 	if err != nil {
 		panic(err)
@@ -15,24 +21,27 @@ func main() {
 
 	ctx := context.Background()
 
-	_, err = client.ListDNSRecords(ctx)
+	records, err := client.ListDNSRecords(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	// print the records
+	jsonData, err := json.MarshalIndent(records, "", "    ")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(jsonData))
 
 	recordInput := api.DNSRecordInput{
-		Record: "test.mydomain.com",
-		Value:  "<some other>",
+		Record: "test.snrio.com",
+		Value:  "nandrene.synology.me.",
 		Type:   api.CNAMERecordType,
 	}
-	err = client.AddDNSRecord(ctx, recordInput)
+	err = client.RemoveDNSRecord(ctx, recordInput)
 	if err != nil {
 		panic(err)
 	}
-
-	err = client.RemoveDNSRecord(ctx, recordInput)
+	err = client.AddDNSRecord(ctx, recordInput)
 	if err != nil {
 		panic(err)
 	}

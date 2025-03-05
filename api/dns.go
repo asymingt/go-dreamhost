@@ -4,10 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"sort"
-	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -166,17 +165,14 @@ func (c *Client) RemoveDNSRecord(ctx context.Context, record DNSRecordInput) err
 }
 
 func getProcessedRespBody(resp http.Response) ([]byte, error) {
-	bodyDump, err := ioutil.ReadAll(resp.Body)
+	bodyDump, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read body of response")
 	}
-
 	if err := checkSuccessStatus(bodyDump); err != nil {
 		return nil, err
 	}
-
-	bodyStr := string(bodyDump)
-	return []byte(strings.ReplaceAll(bodyStr, "\\\"", "\"")), nil
+	return bodyDump, nil
 }
 
 func checkSuccessStatus(bodyStr []byte) error {
@@ -188,6 +184,5 @@ func checkSuccessStatus(bodyStr []byte) error {
 	if apiResp.Result != successResult {
 		return fmt.Errorf("operation failed - response: %s", apiResp.Data)
 	}
-
 	return nil
 }

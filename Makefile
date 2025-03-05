@@ -21,7 +21,7 @@ vet: ## Run go vet against code.
 lint: ## Runs a linter against the repository.
 	golangci-lint run
 
-build: fmt vet lint
+build:
 	go build -o bin/example example/dns.go 
 
 run: build
